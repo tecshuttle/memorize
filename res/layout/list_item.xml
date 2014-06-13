@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/play_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/SyncState"
+        android:layout_width="4dip"
+        android:layout_height="match_parent"
+        android:background="#FF1493"
+        android:text=""
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/RelativeLayout_memo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="8dip"
+        android:paddingLeft="12dip"
+        android:paddingRight="18dip"
+        android:paddingTop="8dip" >
+
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/list_item_type"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/javascript"
+                android:textColor="#08C"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+            <TextView
+                android:id="@+id/list_item_familiar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:gravity="center_horizontal"
+                android:text="@string/familiar3"
+                android:textColor="#999"
+                android:textSize="12sp"
+                android:typeface="monospace" />
+
+            <TextView
+                android:id="@+id/list_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                
+                android:gravity="right"
+                android:text="@string/play_date"
+                android:textColor="#999"
+                android:textSize="12sp"
+                android:typeface="monospace" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/ItemTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/question"
+            android:textSize="16sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/ItemText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/answer"
+            android:textSize="12sp"
+            android:typeface="monospace" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ItemId"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:visibility="invisible" />
+
+</LinearLayout>

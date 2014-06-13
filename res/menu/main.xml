@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:showAsAction="always"
+        android:title="添加"
+        android:titleCondensed="添加">
+    </item>
+    <item
+        android:id="@+id/play"
+        android:icon="@android:drawable/ic_media_play"
+        android:showAsAction="always"
+        android:title="play"
+        android:titleCondensed="play">
+    </item>
+    <item
+        android:id="@+id/view"
+        android:icon="@android:drawable/ic_menu_view"
+        android:showAsAction="always"
+        android:title="view"
+        android:titleCondensed="view">
+    </item>
+    <item
+        android:id="@+id/account"
+        android:icon="@android:drawable/ic_menu_help"
+        android:showAsAction="ifRoom"
+        android:title="帐户"
+        android:titleCondensed="account">
+    </item>
+    <item
+        android:id="@+id/help"
+        android:icon="@android:drawable/ic_menu_help"
+        android:showAsAction="ifRoom"
+        android:title="帮助"
+        android:titleCondensed="help">
+    </item>
+
+</menu>

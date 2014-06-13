@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/register_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <EditText
+            android:id="@+id/reg_account_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@null"
+            android:cursorVisible="true"
+            android:ems="8"
+            android:hint="@string/user_name"
+            android:textColor="#333333"
+            android:textCursorDrawable="@null"
+            android:typeface="monospace" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/reg_account_pwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@null"
+            android:cursorVisible="true"
+            android:ems="8"
+            android:hint="@string/pwd"
+            android:textColor="#333333"
+            android:textCursorDrawable="@null"
+            android:typeface="monospace" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/account_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@null"
+            android:cursorVisible="true"
+            android:ems="8"
+            android:hint="@string/user_name"
+            android:textColor="#333333"
+            android:textCursorDrawable="@null"
+            android:typeface="monospace" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/account_pwd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@null"
+            android:cursorVisible="true"
+            android:ems="8"
+            android:hint="@string/pwd"
+            android:textColor="#333333"
+            android:textCursorDrawable="@null"
+            android:typeface="monospace" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF" >
+
+        <Button
+            android:id="@+id/register_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:minHeight="4dip"
+            android:minWidth="4dip"
+            android:padding="10dp"
+            android:text="@string/register"
+            android:textColor="#08C" />
+
+        <Button
+            android:id="@+id/login_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:minHeight="4dip"
+            android:minWidth="4dip"
+            android:padding="10dp"
+            android:text="@string/login"
+            android:textColor="#08C" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/account_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/account_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/user_name_tom"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/layout_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFF" >
+
+            <Button
+                android:id="@+id/logout_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:minHeight="4dip"
+                android:minWidth="4dip"
+                android:padding="10dp"
+                android:text="@string/logout"
+                android:textColor="#08C" />
+
+            <Button
+                android:id="@+id/setting_return_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:minHeight="4dip"
+                android:minWidth="4dip"
+                android:padding="10dp"
+                android:text="@string/return_list"
+                android:textColor="#08C" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

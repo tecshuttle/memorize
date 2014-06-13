@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">memorize</string>
+    <string name="cn_app_name">别忘了</string>
+    <string name="question">写出javascript文本转数字的函数：</string>
+    <string name="answer">toString()</string>
+    <string name="play">做题</string>
+    <string name="view">查看题库</string>
+    <string name="help">使用帮助</string>
+    <string name="label_add">添加题目</string>
+    <string name="label_edit">编辑题目</string>
+    <string name="hint">输入答案</string>
+    <string name="hint_add">请输入题目内容</string>
+    <string name="hint_answer">请输入答案</string>
+    <string name="hidden_rec_id">0</string>
+    <string name="btn_add">保存</string>
+    <string name="submit_button">提交</string>
+    <string name="choice_btn_1">选项1</string>
+    <string name="choice_btn_2">选项2</string>
+    <string name="choice_btn_3">选项3</string>
+    <string name="choice_btn_4">选项4</string>
+    <string name="netstate">网络未连接</string>
+    <string name="setnetwork">设置网络</string>
+    <string name="ok">OK</string>
+    <string name="cancel">取消</string>
+    <string name="empty_string"></string>
+    <string name="quiz_type">题型</string>
+    <string name="quiz_rest">还剩 x 道题</string>
+    <string name="explain">题目解释</string>
+    <string name="return_list">返回</string>
+    <string name="return_btn">返回</string>
+    <string name="item_type">类别</string>
+    <string name="next_question">下一题</string>
+    <string name="view_count">第 1 3 次</string>
+    <string name="javascript">javascript</string>
+    <string name="familiar3">熟悉度 3</string>
+    <string name="play_date">练习日 2014 8 12</string>
+    <string name="today_finished">今天的练习已全部完成！</string>
+    <string name="register">注册</string>
+    <string name="login">登入</string>
+    <string name="user_name">用户名</string>
+    <string name="pwd">密码</string>
+    <string name="user_name_tom">用户名：tom</string>
+    <string name="logout">登出</string>
+
+</resources>
