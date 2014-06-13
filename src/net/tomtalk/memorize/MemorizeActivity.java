@@ -250,19 +250,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	setContentView(R.layout.main); // 加载layout
 	gesture_detector = new GestureDetector(this, this); // 手势支持
 
-	// 打开或创建数据库，如果已经有memorize.db，则跳过。
-	File f = this.getDatabasePath("memorize.db");
-	String fileName = f.getAbsolutePath();
-	File dbFile = new File(fileName);
-
-	if (!dbFile.exists()) {
-	    db = openOrCreateDatabase("memorize.db", Context.MODE_PRIVATE, null);
-	    db.execSQL("DROP TABLE IF EXISTS questions");
-	    db.execSQL("CREATE TABLE questions ( _id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR, answer VARCHAR, explain VARCHAR DEFAULT '', priority INT DEFAULT 0, type CHAR NOT NULL DEFAULT '', is_memo INT NOT NULL DEFAULT 0, next_play_date DATE, familiar INT DEFAULT 0, correct_count INT DEFAULT 0, create_date DATE, sync_state CHAR DEFAULT 'add', mtime INT DEFAULT 0)");
-	    db.execSQL("INSERT INTO questions (question, answer, next_play_date, create_date) VALUES ('Tom的生日？', '19790312','2000-10-10','2000-10-10')");
-	} else {
-	    db = openOrCreateDatabase("memorize.db", Context.MODE_PRIVATE, null);
-	}
+	init_db();
 
 	mViewFlipper = (ViewFlipper) findViewById(R.id.flipper); // 初始化屏幕切换
 
@@ -283,6 +271,44 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	changeViewToList(); // 默认进入列表页
 
 	SoundInit(); // 加载声音文件备用。
+    }
+
+    public void init_db() {
+	// 打开或创建数据库，如果已经有db文件，则跳过。
+	String db_file_name = "memorize.db";
+
+	File f = this.getDatabasePath(db_file_name);
+	String fileName = f.getAbsolutePath();
+	File dbFile = new File(fileName);
+
+	if (!dbFile.exists()) {
+	    open_db_file(db_file_name);
+	    create_db_table();
+	} else {
+	    open_db_file(db_file_name);
+	}
+    }
+
+    public void open_db_file(String db_file_name) {
+	db = openOrCreateDatabase(db_file_name, Context.MODE_PRIVATE, null);
+    }
+
+    public void create_db_table() {
+	db.execSQL("DROP TABLE IF EXISTS questions");
+	db.execSQL("CREATE TABLE questions ( _id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR, answer VARCHAR, explain VARCHAR DEFAULT '', priority INT DEFAULT 0, type CHAR NOT NULL DEFAULT '', is_memo INT NOT NULL DEFAULT 0, next_play_date DATE, familiar INT DEFAULT 0, correct_count INT DEFAULT 0, create_date DATE, sync_state CHAR DEFAULT 'add', mtime INT DEFAULT 0)");
+
+	int mtime = (int) (System.currentTimeMillis() / 1000);
+	String play_mtime = getToday(0) + "'," + mtime;
+
+	String item1 = "('这是一个紧要事项', '事项内容','bug','" + play_mtime + "),";
+	String item2 = "('待办事项', '事项内容','todo','" + play_mtime + "),";
+	String item3 = "('备忘条目', '备忘内容','memo','" + play_mtime + "),";
+	String item4 = "('这是一个填空题示例。请写出Tom的生日：', '19790312','quiz','" + play_mtime + "),";
+	String item5 = "('这是一个选择题示例。Tom的是男生吗？', '是|不是|1','quiz','" + play_mtime + ")";
+
+	String init_user_db = "INSERT INTO questions (question, answer, type, next_play_date, mtime) VALUES ";
+	init_user_db += item1 + item2 + item3 + item4 + item5;
+	db.execSQL(init_user_db);
     }
 
     public SharedPreferences getSetting() {
