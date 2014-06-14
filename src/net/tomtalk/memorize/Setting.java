@@ -55,9 +55,7 @@ public class Setting {
 
 	    matrix.preTranslate(-centerX, -centerY);
 	    matrix.postTranslate(centerX, centerY);
-
 	}
-
     }
 
     public final class DisplayNextView implements Animation.AnimationListener {
@@ -130,6 +128,8 @@ public class Setting {
     private TextView tv_uid;
     private EditText login_name;
     private EditText login_pwd;
+    private EditText reg_name;
+    private EditText reg_pwd;
 
     private Button register_btn;
     private Button login_btn;
@@ -138,9 +138,9 @@ public class Setting {
 
     private SharedPreferences setting;
 
-    private LinearLayout login_layout;
-    private LinearLayout register_layout;
-    private Boolean isLoginLayout = false;
+    private LinearLayout login_ly;
+    private LinearLayout register_ly;
+    private Boolean isLoginLy = false;
 
     public Setting(MemorizeActivity activity) {
 	me = activity;
@@ -152,10 +152,15 @@ public class Setting {
 	me.openInput();
 
 	// 初始化页面控件变量
+	login_ly = (LinearLayout) me.findViewById(R.id.login_form);
+	register_ly = (LinearLayout) me.findViewById(R.id.register_form);
+
 	tv_user_name = (TextView) me.findViewById(R.id.account_name);
 	tv_uid = (TextView) me.findViewById(R.id.account_id);
 	login_name = (EditText) me.findViewById(R.id.login_name);
 	login_pwd = (EditText) me.findViewById(R.id.login_pwd);
+	reg_name = (EditText) me.findViewById(R.id.reg_name);
+	reg_pwd = (EditText) me.findViewById(R.id.reg_pwd);
 
 	set_user_info();
 
@@ -165,6 +170,7 @@ public class Setting {
 	// 按钮
 	register_btn = (Button) me.findViewById(R.id.register_btn);
 	register_btn.setOnClickListener(onRegister);
+	register_btn.setTextColor(0x990088cc);
 
 	login_btn = (Button) me.findViewById(R.id.login_btn);
 	login_btn.setOnClickListener(onLogin);
@@ -198,6 +204,8 @@ public class Setting {
 	logout_btn.setVisibility(View.GONE);
 	return_btn.setVisibility(View.GONE);
 
+	reg_name.setVisibility(View.VISIBLE);
+	reg_pwd.setVisibility(View.VISIBLE);
 	login_name.setVisibility(View.VISIBLE);
 	login_pwd.setVisibility(View.VISIBLE);
 	register_btn.setVisibility(View.VISIBLE);
@@ -210,6 +218,8 @@ public class Setting {
 	logout_btn.setVisibility(View.VISIBLE);
 	return_btn.setVisibility(View.VISIBLE);
 
+	reg_name.setVisibility(View.GONE);
+	reg_pwd.setVisibility(View.GONE);
 	login_name.setVisibility(View.GONE);
 	login_pwd.setVisibility(View.GONE);
 	register_btn.setVisibility(View.GONE);
@@ -217,18 +227,28 @@ public class Setting {
     }
 
     public void form_reset() {
+	reg_name.setText("");
+	reg_pwd.setText("");
 	login_name.setText("");
 	login_pwd.setText("");
     }
 
-    public void setUid(String uid) {
+    public void setUid(String result) {
+	String[] np = result.split("\\|");
+	String name = np[0];
+	String uid = np[1];
+	String type = np[2];
+
 	if (uid.equals("0")) {
-	    me.toast("用户名或密码错，请重新输入！");
+	    if (type.equals("login")) {
+		me.toast("用户名或密码错，请重新输入！");
+	    } else if (type.equals("register")) {
+		me.toast("用户名已被使用，换一个！");
+	    }
 	} else {
 	    Editor editor = setting.edit();
 	    editor.putString("uid", uid);
-	    editor.putString("name", login_name.getText().toString());
-	    editor.putString("pwd", login_pwd.getText().toString());
+	    editor.putString("name", name);
 	    editor.commit();
 
 	    set_user_info();
@@ -241,7 +261,6 @@ public class Setting {
 
 	editor.putString("uid", "");
 	editor.putString("name", "");
-	editor.putString("pwd", "");
 
 	editor.commit();
     }
@@ -253,8 +272,8 @@ public class Setting {
 
     public void applyRotation(float start, float end) {
 	// Find the center of image
-	final float centerX = login_layout.getWidth() / 2.0f;
-	final float centerY = login_layout.getHeight() / 2.0f;
+	final float centerX = login_ly.getWidth() / 2.0f;
+	final float centerY = login_ly.getHeight() / 2.0f;
 
 	// Create a new 3D rotation with the supplied parameter
 	// The animation listener is used to trigger the next animation
@@ -263,32 +282,43 @@ public class Setting {
 	rotation.setFillAfter(true);
 	rotation.setInterpolator(new AccelerateInterpolator());
 
-	rotation.setAnimationListener(new DisplayNextView(isLoginLayout, login_layout,
-		register_layout));
+	rotation.setAnimationListener(new DisplayNextView(isLoginLy, login_ly, register_ly));
 
-	if (isLoginLayout) {
-	    login_layout.startAnimation(rotation);
+	if (isLoginLy) {
+	    login_ly.startAnimation(rotation);
 	} else {
-	    register_layout.startAnimation(rotation);
+	    register_ly.startAnimation(rotation);
 	}
     }
 
     Button.OnClickListener onRegister = new Button.OnClickListener() {
 	public void onClick(View v) {
-	    login_layout = (LinearLayout) me.findViewById(R.id.login_form);
-	    register_layout = (LinearLayout) me.findViewById(R.id.register_form);
+	    register_btn.setTextColor(0xff0088cc);
+	    login_btn.setTextColor(0x990088cc);
 
-	    isLoginLayout = true;
-	    applyRotation(0, 90);
+	    if (isLoginLy) {
+
+		String name = reg_name.getText().toString();
+		String pwd = reg_pwd.getText().toString();
+		if (name.equals("") || pwd.equals("")) {
+		    me.toast("请填写注册名和密码！");
+		} else {
+		    me.http.getNewUid(name, pwd);
+		}
+	    } else {
+		isLoginLy = true;
+		applyRotation(0, 90);
+	    }
 	}
     };
 
     Button.OnClickListener onLogin = new Button.OnClickListener() {
 	public void onClick(View v) {
-	    if (isLoginLayout) {
-		isLoginLayout = false;
-		login_layout = (LinearLayout) me.findViewById(R.id.login_form);
-		register_layout = (LinearLayout) me.findViewById(R.id.register_form);
+	    register_btn.setTextColor(0x990088cc);
+	    login_btn.setTextColor(0xff0088cc);
+
+	    if (isLoginLy) {
+		isLoginLy = false;
 		applyRotation(0, -90);
 	    } else {
 		String name = login_name.getText().toString();

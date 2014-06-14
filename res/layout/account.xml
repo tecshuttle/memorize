@@ -15,7 +15,7 @@
         android:visibility="gone" >
 
         <EditText
-            android:id="@+id/reg_account_name"
+            android:id="@+id/reg_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -28,11 +28,10 @@
             android:textCursorDrawable="@null"
             android:typeface="monospace" >
 
-            <requestFocus />
         </EditText>
 
         <EditText
-            android:id="@+id/reg_account_pwd"
+            android:id="@+id/reg_pwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -66,7 +65,6 @@
             android:textCursorDrawable="@null"
             android:typeface="monospace" >
 
-            <requestFocus />
         </EditText>
 
         <EditText

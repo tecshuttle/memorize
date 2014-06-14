@@ -233,6 +233,72 @@ public class Http {
 
 	new getUidTask(me).execute(name + "|" + pwd);
     }
+
+    // 通过name、pwd取用户id
+    private class getNewUidTask extends AsyncTask<String, Void, String> {
+	private MemorizeActivity me;
+
+	public getNewUidTask(MemorizeActivity activity) {
+	    me = activity;
+	}
+
+	@Override
+	protected String doInBackground(String... urls) {
+	    return getNewUidHttp(urls[0]);
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+	    me.setting.setUid(result);
+	}
+    }
+
+    public static String getNewUidHttp(String name_pwd) {
+	InputStream inputStream = null;
+	String result = "";
+
+	String[] np = name_pwd.split("\\|");
+	String name = np[0];
+	String pwd = np[1];
+
+	try {
+	    HttpClient client = new DefaultHttpClient();
+
+	    // 设置post参数
+	    List<NameValuePair> params = new ArrayList<NameValuePair>();
+	    params.add(new BasicNameValuePair("name", name));
+	    params.add(new BasicNameValuePair("pwd", pwd));
+
+	    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+	    HttpPost request = new HttpPost("http://42.121.108.182/memorize/get_new_uid.php");
+	    request.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+	    request.setEntity(entity);
+
+	    // 发送请求
+	    HttpResponse httpResponse = client.execute(request);
+	    inputStream = httpResponse.getEntity().getContent();
+
+	    if (inputStream != null)
+		result = convertInputStreamToString(inputStream);
+	    else
+		result = "error";
+
+	} catch (Exception e) {
+	    // none
+	}
+
+	return result;
+    }
+
+    public void getNewUid(String name, String pwd) {
+	if (!isConnected()) {
+	    me.toast("网络不可用");
+	    return;
+	}
+
+	new getNewUidTask(me).execute(name + "|" + pwd);
+    }
 }
 
 // end file
