@@ -39,9 +39,12 @@
     <string name="today_finished">今天的练习已全部完成！</string>
     <string name="register">注册</string>
     <string name="login">登入</string>
-    <string name="user_name">用户名</string>
-    <string name="pwd">密码</string>
+    <string name="user_name">登入用户名</string>
+    <string name="pwd">登入密码</string>
+    <string name="reg_user_name">注册用户名</string>
+    <string name="reg_user_pwd">注册密码</string>
     <string name="user_name_tom">用户名：tom</string>
+    <string name="user_name_uid">用户ID：11</string>
     <string name="logout">登出</string>
 
 </resources>

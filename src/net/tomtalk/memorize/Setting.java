@@ -112,7 +112,7 @@ public class Setting {
 		rotation = new Flip3dAnimation(90, 0, centerX, centerY);
 	    }
 
-	    rotation.setDuration(500);
+	    rotation.setDuration(200);
 	    rotation.setFillAfter(true);
 	    rotation.setInterpolator(new DecelerateInterpolator());
 
@@ -126,9 +126,10 @@ public class Setting {
 
     private MemorizeActivity me;
 
+    private TextView tv_user_name;
     private TextView tv_uid;
-    private EditText et_name;
-    private EditText et_pwd;
+    private EditText login_name;
+    private EditText login_pwd;
 
     private Button register_btn;
     private Button login_btn;
@@ -139,7 +140,7 @@ public class Setting {
 
     private LinearLayout login_layout;
     private LinearLayout register_layout;
-    private Boolean isLoginLayout = true;
+    private Boolean isLoginLayout = false;
 
     public Setting(MemorizeActivity activity) {
 	me = activity;
@@ -151,16 +152,17 @@ public class Setting {
 	me.openInput();
 
 	// 初始化页面控件变量
+	tv_user_name = (TextView) me.findViewById(R.id.account_name);
 	tv_uid = (TextView) me.findViewById(R.id.account_id);
-	et_name = (EditText) me.findViewById(R.id.account_name);
-	et_pwd = (EditText) me.findViewById(R.id.account_pwd);
+	login_name = (EditText) me.findViewById(R.id.login_name);
+	login_pwd = (EditText) me.findViewById(R.id.login_pwd);
 
-	tv_uid.setText("uid: " + setting.getString("uid", ""));
-	et_name.setText(setting.getString("name", ""));
-	et_pwd.setText(setting.getString("pwd", ""));
+	set_user_info();
+
+	login_name.setText(setting.getString("name", ""));
+	login_pwd.setText(setting.getString("pwd", ""));
 
 	// 按钮
-
 	register_btn = (Button) me.findViewById(R.id.register_btn);
 	register_btn.setOnClickListener(onRegister);
 
@@ -172,18 +174,81 @@ public class Setting {
 
 	return_btn = (Button) me.findViewById(R.id.setting_return_btn);
 	return_btn.setOnClickListener(onReturnList);
+
+	if (setting.getString("uid", "").compareTo("") == 0) {
+	    // register or login
+	    logout_btn.setVisibility(View.GONE);
+	    return_btn.setVisibility(View.GONE);
+
+	    tv_user_name.setVisibility(View.GONE);
+	    tv_uid.setVisibility(View.GONE);
+	} else {
+	    // already login user account
+	    login_name.setVisibility(View.GONE);
+	    login_pwd.setVisibility(View.GONE);
+
+	    register_btn.setVisibility(View.GONE);
+	    login_btn.setVisibility(View.GONE);
+	}
+    }
+
+    public void showLogin() {
+	tv_user_name.setVisibility(View.GONE);
+	tv_uid.setVisibility(View.GONE);
+	logout_btn.setVisibility(View.GONE);
+	return_btn.setVisibility(View.GONE);
+
+	login_name.setVisibility(View.VISIBLE);
+	login_pwd.setVisibility(View.VISIBLE);
+	register_btn.setVisibility(View.VISIBLE);
+	login_btn.setVisibility(View.VISIBLE);
+    }
+
+    public void show_user_info() {
+	tv_user_name.setVisibility(View.VISIBLE);
+	tv_uid.setVisibility(View.VISIBLE);
+	logout_btn.setVisibility(View.VISIBLE);
+	return_btn.setVisibility(View.VISIBLE);
+
+	login_name.setVisibility(View.GONE);
+	login_pwd.setVisibility(View.GONE);
+	register_btn.setVisibility(View.GONE);
+	login_btn.setVisibility(View.GONE);
+    }
+
+    public void form_reset() {
+	login_name.setText("");
+	login_pwd.setText("");
     }
 
     public void setUid(String uid) {
+	if (uid.equals("0")) {
+	    me.toast("用户名或密码错，请重新输入！");
+	} else {
+	    Editor editor = setting.edit();
+	    editor.putString("uid", uid);
+	    editor.putString("name", login_name.getText().toString());
+	    editor.putString("pwd", login_pwd.getText().toString());
+	    editor.commit();
+
+	    set_user_info();
+	    show_user_info();
+	}
+    }
+
+    public void clearUserInfo() {
 	Editor editor = setting.edit();
 
-	editor.putString("uid", uid);
-	editor.putString("name", et_name.getText().toString());
-	editor.putString("pwd", et_pwd.getText().toString());
+	editor.putString("uid", "");
+	editor.putString("name", "");
+	editor.putString("pwd", "");
 
 	editor.commit();
+    }
 
-	tv_uid.setText("用户ID：" + uid);
+    public void set_user_info() {
+	tv_user_name.setText("用户名：" + setting.getString("name", ""));
+	tv_uid.setText("用户ID：" + setting.getString("uid", ""));
     }
 
     public void applyRotation(float start, float end) {
@@ -194,7 +259,7 @@ public class Setting {
 	// Create a new 3D rotation with the supplied parameter
 	// The animation listener is used to trigger the next animation
 	final Flip3dAnimation rotation = new Flip3dAnimation(start, end, centerX, centerY);
-	rotation.setDuration(500);
+	rotation.setDuration(200);
 	rotation.setFillAfter(true);
 	rotation.setInterpolator(new AccelerateInterpolator());
 
@@ -213,8 +278,6 @@ public class Setting {
 	    login_layout = (LinearLayout) me.findViewById(R.id.login_form);
 	    register_layout = (LinearLayout) me.findViewById(R.id.register_form);
 
-	    // login_layout.setVisibility(View.GONE);
-
 	    isLoginLayout = true;
 	    applyRotation(0, 90);
 	}
@@ -222,21 +285,28 @@ public class Setting {
 
     Button.OnClickListener onLogin = new Button.OnClickListener() {
 	public void onClick(View v) {
-	    // me.http.getUid(et_name.getText().toString(),
-	    // et_pwd.getText().toString());
-	    login_layout = (LinearLayout) me.findViewById(R.id.login_form);
-	    register_layout = (LinearLayout) me.findViewById(R.id.register_form);
-
-	    // register_layout.setVisibility(View.GONE);
-
-	    isLoginLayout = false;
-	    applyRotation(0, -90);
+	    if (isLoginLayout) {
+		isLoginLayout = false;
+		login_layout = (LinearLayout) me.findViewById(R.id.login_form);
+		register_layout = (LinearLayout) me.findViewById(R.id.register_form);
+		applyRotation(0, -90);
+	    } else {
+		String name = login_name.getText().toString();
+		String pwd = login_pwd.getText().toString();
+		if (name.equals("") || pwd.equals("")) {
+		    me.toast("请填写登入名和密码！");
+		} else {
+		    me.http.getUid(name, pwd);
+		}
+	    }
 	}
     };
 
     Button.OnClickListener onLogout = new Button.OnClickListener() {
 	public void onClick(View v) {
-	    me.toast("logout building ...");
+	    clearUserInfo();
+	    showLogin();
+	    form_reset();
 	}
     };
 

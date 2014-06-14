@@ -205,7 +205,7 @@ public class Http {
 
 	    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
-	    HttpPost request = new HttpPost("http://42.121.108.182/get_uid.php");
+	    HttpPost request = new HttpPost("http://42.121.108.182/memorize/get_uid.php");
 	    request.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 	    request.setEntity(entity);
 

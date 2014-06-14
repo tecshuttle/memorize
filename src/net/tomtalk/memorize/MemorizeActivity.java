@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context; //数据库支持
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase; //数据库支持
 import android.media.MediaPlayer;
@@ -247,33 +246,26 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	// WindowManager.LayoutParams.FLAG_FULLSCREEN
 	// );
 
-	setContentView(R.layout.main); // 加载layout
 	gesture_detector = new GestureDetector(this, this); // 手势支持
 
-	init_db();
+	initDB();
+	SoundInit(); // 加载声音文件备用。
 
+	setContentView(R.layout.main); // 加载layout
 	mViewFlipper = (ViewFlipper) findViewById(R.id.flipper); // 初始化屏幕切换
 
 	getSetting(); // 初始化帐户信息
 
-	play.init();
-
-	site_sync();
-
-	loadAllQuestion(); // 加载题库
-
-	// 默认显示做题页，如题目已完成，则显示列表页。
-	/*
-	 * if (listItem.isEmpty()) { changeViewToList(); } else {
-	 * changeViewToPlay(); }
-	 */
-
-	changeViewToList(); // 默认进入列表页
-
-	SoundInit(); // 加载声音文件备用。
+	if (getUid().compareTo("") == 0) {
+	    changeViewToAccount();
+	} else {
+	    site_sync();
+	    loadAllQuestion(); // 加载题库
+	    changeViewToList(); // 默认进入列表页
+	}
     }
 
-    public void init_db() {
+    public void initDB() {
 	// 打开或创建数据库，如果已经有db文件，则跳过。
 	String db_file_name = "memorize.db";
 
@@ -315,24 +307,13 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String filename = "memorizeSetting";
 	SharedPreferences setting = getSharedPreferences(filename, Context.MODE_PRIVATE);
 
-	if (setting.getString("uid", "") == "") {
-	    Editor editor = setting.edit();
-
-	    editor.putString("uid", "0");
-	    editor.putString("name", "");
-	    editor.putString("pwd", "");
-
-	    editor.commit();
-	}
-
 	return setting;
     }
 
     public String getUid() {
-	String filename = "memorizeSetting";
-	SharedPreferences setting = getSharedPreferences(filename, Context.MODE_PRIVATE);
-
-	return setting.getString("uid", "0");
+	SharedPreferences setting = getSetting();
+	
+	return setting.getString("uid", "");
     }
 
     // 绑定触屏事件
@@ -590,6 +571,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     public void changeViewToPlay() {
 	changeView(1);
 	loadAllQuestion();
+	play.init();
 	play.flushQuestion(0); // 从右向左
     }
 
