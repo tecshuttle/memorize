@@ -59,6 +59,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     private MediaPlayer answer_correct_snd;
     private MediaPlayer answer_incorrect_snd;
     private MediaPlayer save_snd;
+    private float mLastionMotionX = 0; // 记住上次触摸屏的位置
 
     private class MyCustomAdapter extends BaseAdapter {
 	private MemorizeActivity me;
@@ -306,19 +307,43 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     public SharedPreferences getSetting() {
 	String filename = "memorizeSetting";
 	SharedPreferences setting = getSharedPreferences(filename, Context.MODE_PRIVATE);
-
 	return setting;
     }
 
     public String getUid() {
 	SharedPreferences setting = getSetting();
-	
 	return setting.getString("uid", "");
     }
 
     // 绑定触屏事件
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+	LinearLayout ly = (LinearLayout) findViewById(R.id.ly_question);
+
+	float x = event.getX();
+	// float y = event.getY();
+
+	switch (event.getAction()) {
+	case MotionEvent.ACTION_DOWN:
+	    // 如果屏幕的动画还没结束，你就按下了，我们就结束上一次动画，即开始这次新ACTION_DOWN的动画
+	    /*
+	     * if (mScroller != null) { if (!mScroller.isFinished()) {
+	     * mScroller.abortAnimation(); } }
+	     */
+	    mLastionMotionX = x; // 记住开始落下的屏幕点
+	    break;
+	case MotionEvent.ACTION_MOVE:
+	    int detaX = (int) (mLastionMotionX - x); // 每次滑动屏幕，屏幕应该移动的距离
+	    ly.scrollBy(detaX, 0);// 开始缓慢滑屏咯。 detaX > 0 向右滑动 ， detaX < 0 向左滑动 ，
+
+	    mLastionMotionX = x;
+	    break;
+	case MotionEvent.ACTION_UP:
+	    mLastionMotionX = 0;
+	    ly.scrollTo(0, 0);
+	    break;
+	}
+
 	return this.gesture_detector.onTouchEvent(event);
     }
 
