@@ -57,22 +57,14 @@ public class Add {
     }
 
     public void spinnerInit() {
+	// reading item type
 	list.clear();
-	list.add("memo");
-	list.add("bug");
-	list.add("todo");
-	list.add("quiz");
-	list.add("php");
-	list.add("javascript");
-	list.add("html");
-	list.add("css");
-	list.add("java");
-	list.add("android");
-	list.add("shell");
-	list.add("linux");
-	list.add("vim");
-	list.add("jquery");
-	list.add("english");
+	String sq = "SELECT * FROM item_type ";
+	Cursor cs = db.rawQuery(sq, new String[] {});
+	while (cs.moveToNext()) {
+	    list.add(cs.getString(cs.getColumnIndex("name")));
+	}
+	cs.close();
 
 	mySpinner = (Spinner) me.findViewById(R.id.spinner1);
 	adapter = new ArrayAdapter<String>(me, R.layout.spinner_item, list);

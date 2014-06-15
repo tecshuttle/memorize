@@ -5,9 +5,11 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context; //数据库支持
@@ -68,12 +70,26 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	private static final int TYPE_MEMO = 3;
 	private static final int TYPE_QUESTION = 4;
 
+	private HashMap<String, String[]> item_type = new HashMap<String, String[]>();
+
 	private ArrayList<HashMap<String, Object>> mData = new ArrayList<HashMap<String, Object>>();
 	private LayoutInflater mInflater;
 
 	public MyCustomAdapter(MemorizeActivity activity) {
 	    me = activity;
 	    mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+	    String sq = "SELECT * FROM item_type ";
+	    Cursor cs = db.rawQuery(sq, new String[] {});
+	    while (cs.moveToNext()) {
+		String name = cs.getString(cs.getColumnIndex("name"));
+		String priority = cs.getString(cs.getColumnIndex("priority"));
+		String color = cs.getString(cs.getColumnIndex("color"));
+
+		String date[] = { priority, color };
+		item_type.put(name, date);
+	    }
+	    cs.close();
 	}
 
 	public void addItem(HashMap<String, Object> map) {
@@ -136,30 +152,35 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    HashMap<String, Object> question = mData.get(position);
 	    int type = getItemViewType(question);
+	    int color = 0;
 	    switch (type) {
 	    case TYPE_BUG:
+		color = 0xFF000000 + Integer.parseInt(item_type.get("bug")[1], 16);
 		holder.top_bar.setVisibility(/* GONE = */8);
-		holder.title.setTextColor(0xffbd362f);
-		holder.text.setTextColor(0xffbd362f);
+		holder.title.setTextColor(color);
+		holder.text.setTextColor(color);
 		break;
 	    case TYPE_TODO:
+		color = 0xFF000000 + Integer.parseInt(item_type.get("todo")[1], 16);
 		holder.top_bar.setVisibility(/* GONE = */8);
-		holder.title.setTextColor(0xffDAA520);
-		holder.text.setTextColor(0xffDAA520);
+		holder.title.setTextColor(color);
+		holder.text.setTextColor(color);
 		break;
 	    case TYPE_MEMO:
-		holder.top_bar.setVisibility(/* GONE = */8);
 		int mtime = Integer.parseInt(question.get("mtime").toString());
-		holder.title.setTextColor(getMemoColor(mtime));
-		holder.text.setTextColor(getMemoColor(mtime));
+		color = getMemoColor(mtime) + Integer.parseInt(item_type.get("memo")[1], 16);
+		holder.top_bar.setVisibility(/* GONE = */8);
+		holder.title.setTextColor(color);
+		holder.text.setTextColor(color);
 		break;
 	    case TYPE_QUESTION:
+		color = 0xFF000000 + Integer.parseInt(item_type.get("quiz")[1], 16);
 		holder.type.setText(question.get("Type").toString());
 		holder.familiar.setText("熟悉度 " + question.get("Familiar"));
 		holder.date.setText("练习日 " + question.get("PlayDate").toString());
 
 		holder.title.setTextSize(12);
-		holder.title.setTextColor(0xff0088CC);
+		holder.title.setTextColor(color);
 
 		holder.text.setVisibility(/* GONE = */8); // quiz不显示答案
 		break;
@@ -202,23 +223,23 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    int color = 0;
 	    if (before < 1 * 3600 * 24) {
-		color = 0xff000000;
+		color = 0xFF000000;
 	    } else if (before < 2 * 3600 * 24) {
-		color = 0xff222222;
+		color = 0xEE000000;
 	    } else if (before < 3 * 3600 * 24) {
-		color = 0xff444444;
+		color = 0xCC000000;
 	    } else if (before < 4 * 3600 * 24) {
-		color = 0xff666666;
+		color = 0xAA000000;
 	    } else if (before < 5 * 3600 * 24) {
-		color = 0xff888888;
+		color = 0x88000000;
 	    } else if (before < 6 * 3600 * 24) {
-		color = 0xffaaaaaa;
+		color = 0x66000000;
 	    } else if (before < 7 * 3600 * 24) {
-		color = 0xffcccccc;
+		color = 0x44000000;
 	    } else if (before < 8 * 3600 * 24) {
-		color = 0xffeeeeee;
+		color = 0x22000000;
 	    } else if (before < 9 * 3600 * 24) {
-		color = 0xffffffff;
+		color = 0x00000000;
 	    }
 
 	    return color;
@@ -302,14 +323,13 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	init_questions += item1 + item2 + item3 + item4 + item5;
 	db.execSQL(init_questions);
 
-	
 	db.execSQL("DROP TABLE IF EXISTS item_type");
 	db.execSQL("CREATE TABLE item_type ( id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, priority INT DEFAULT 0, color CHAR DEFAULT 'ffffff', fade_out INT DEFAULT 0, sync_state char DEFAULT 'add' ) ");
 
-	String type1 = "(1, 'memo', 0, 'ffffff', 0, ''),";
-	String type2 = "(2, 'bug', 0, 'ffffff', 0, ''),";
-	String type3 = "(3, 'todo', 0, 'ffffff', 0, ''),";
-	String type4 = "(4, 'quiz', 0, 'ffffff', 0, '')";
+	String type1 = "(1, 'memo', 0, '000000', 0, ''),";
+	String type2 = "(2, 'bug', 0, 'bd362f', 0, ''),";
+	String type3 = "(3, 'todo', 0, 'DAA520', 0, ''),";
+	String type4 = "(4, 'quiz', 0, '0088CC', 0, '')";
 
 	String init_item_type = "INSERT INTO item_type (id, name, priority, color, fade_out, sync_state) VALUES ";
 	init_item_type += type1 + type2 + type3 + type4;
