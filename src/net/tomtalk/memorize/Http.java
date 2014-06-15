@@ -360,6 +360,67 @@ public class Http {
 	new syncTypeTask(me).execute(uid);
     }
 
+    
+    // sync type_time table from site
+    private class initNewUserDBTask extends AsyncTask<String, Void, String> {
+	private MemorizeActivity me;
+
+	public initNewUserDBTask(MemorizeActivity activity) {
+	    me = activity;
+	}
+
+	@Override
+	protected String doInBackground(String... urls) {
+	    return initNewUserDBHttp(urls[0]);
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+	    me.setting.first_view(result);
+	}
+    }
+
+    public static String initNewUserDBHttp(String uid) {
+	InputStream inputStream = null;
+	String result = "";
+
+	try {
+	    HttpClient client = new DefaultHttpClient();
+
+	    // 设置post参数
+	    List<NameValuePair> params = new ArrayList<NameValuePair>();
+	    params.add(new BasicNameValuePair("uid", uid));
+
+	    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+	    HttpPost request = new HttpPost("http://42.121.108.182/memorize/init_new_user_db.php");
+	    request.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+	    request.setEntity(entity);
+
+	    // 发送请求
+	    HttpResponse httpResponse = client.execute(request);
+	    inputStream = httpResponse.getEntity().getContent();
+
+	    if (inputStream != null)
+		result = convertInputStreamToString(inputStream);
+	    else
+		result = "error";
+
+	} catch (Exception e) {
+	    // none
+	}
+
+	return result;
+    }
+
+    public void init_new_user_db(String uid) {
+	if (!isConnected()) {
+	    me.toast("网络不可用");
+	    return;
+	}
+
+	new initNewUserDBTask(me).execute(uid);
+    }
 }
 
 // end file

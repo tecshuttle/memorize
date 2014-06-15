@@ -291,6 +291,11 @@ public class Setting {
 	}
     }
 
+    public void first_view(String result) {
+	me.toast(result);
+	me.http.syncType(me.getUid());
+    }
+
     Button.OnClickListener onRegister = new Button.OnClickListener() {
 	public void onClick(View v) {
 	    register_btn.setTextColor(0xff0088cc);
@@ -342,10 +347,10 @@ public class Setting {
 
     Button.OnClickListener onReturnList = new Button.OnClickListener() {
 	public void onClick(View v) {
+	    me.initDB();
 	    me.changeViewToList(); // change to list view
 	}
     };
-
 }
 
 // end file

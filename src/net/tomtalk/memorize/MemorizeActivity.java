@@ -61,6 +61,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     private MediaPlayer answer_correct_snd;
     private MediaPlayer answer_incorrect_snd;
     private MediaPlayer save_snd;
+    private String db_file_name = "memorize.db";
 
     private class MyCustomAdapter extends BaseAdapter {
 	private MemorizeActivity me;
@@ -269,7 +270,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	gesture_detector = new GestureDetector(this, this); // 手势支持
 
-	initDB();
 	SoundInit(); // 加载声音文件备用。
 
 	setContentView(R.layout.main); // 加载layout
@@ -280,6 +280,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	if (getUid().compareTo("") == 0) {
 	    changeViewToAccount();
 	} else {
+	    open_db_file();
 	    site_sync();
 	    loadAllQuestion(); // 加载题库
 	    changeViewToList(); // 默认进入列表页
@@ -288,52 +289,27 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
     public void initDB() {
 	// 打开或创建数据库，如果已经有db文件，则跳过。
-	String db_file_name = "memorize.db";
-
 	File f = this.getDatabasePath(db_file_name);
 	String fileName = f.getAbsolutePath();
 	File dbFile = new File(fileName);
 
 	if (!dbFile.exists()) {
-	    open_db_file(db_file_name);
+	    open_db_file();
 	    create_db_table();
+	    http.init_new_user_db(getUid());
+	    toast("waiting while prepare your account data...");
 	} else {
-	    open_db_file(db_file_name);
+	    open_db_file();
 	}
     }
 
-    public void open_db_file(String db_file_name) {
+    public void open_db_file() {
 	db = openOrCreateDatabase(db_file_name, Context.MODE_PRIVATE, null);
     }
 
     public void create_db_table() {
-	db.execSQL("DROP TABLE IF EXISTS questions");
 	db.execSQL("CREATE TABLE questions ( _id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR, answer VARCHAR, explain VARCHAR DEFAULT '', priority INT DEFAULT 0, type CHAR NOT NULL DEFAULT '', is_memo INT NOT NULL DEFAULT 0, next_play_date DATE, familiar INT DEFAULT 0, correct_count INT DEFAULT 0, create_date DATE, sync_state CHAR DEFAULT 'add', mtime INT DEFAULT 0)");
-
-	int mtime = (int) (System.currentTimeMillis() / 1000);
-	String play_mtime = getToday(0) + "'," + mtime;
-
-	String item1 = "('这是一个紧要事项', '事项内容','bug','" + play_mtime + "),";
-	String item2 = "('待办事项', '事项内容','todo','" + play_mtime + "),";
-	String item3 = "('备忘条目', '备忘内容','memo','" + play_mtime + "),";
-	String item4 = "('这是一个填空题示例。请写出Tom的生日：', '19790312','quiz','" + play_mtime + "),";
-	String item5 = "('这是一个选择题示例。Tom的是男生吗？', '是|不是|1','quiz','" + play_mtime + ")";
-
-	String init_questions = "INSERT INTO questions (question, answer, type, next_play_date, mtime) VALUES ";
-	init_questions += item1 + item2 + item3 + item4 + item5;
-	db.execSQL(init_questions);
-
-	db.execSQL("DROP TABLE IF EXISTS item_type");
 	db.execSQL("CREATE TABLE item_type ( id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, priority INT DEFAULT 0, color CHAR DEFAULT 'ffffff', fade_out INT DEFAULT 0, sync_state char DEFAULT 'add' ) ");
-
-	String type1 = "(1, 'memo', 0, '000000', 0, ''),";
-	String type2 = "(2, 'bug', 0, 'bd362f', 0, ''),";
-	String type3 = "(3, 'todo', 0, 'DAA520', 0, ''),";
-	String type4 = "(4, 'quiz', 0, '0088CC', 0, '')";
-
-	String init_item_type = "INSERT INTO item_type (id, name, priority, color, fade_out, sync_state) VALUES ";
-	init_item_type += type1 + type2 + type3 + type4;
-	db.execSQL(init_item_type);
     }
 
     public SharedPreferences getSetting() {

@@ -62,6 +62,8 @@ public class Add {
     }
 
     public void sync_type(String result) {
+	db = me.db; // 注册时，数据库没有初始化，所以，在这里再赋值一次。
+
 	if (result.compareTo("NA") != 0) {
 	    try {
 		JSONArray json = new JSONArray(result);
@@ -97,6 +99,9 @@ public class Add {
 		e.printStackTrace();
 	    }
 	}
+
+	// 放在这里，是为了注册时能够初始化数据。最好不要放这里。
+	me.site_sync();
     }
 
     public void spinnerInit() {
