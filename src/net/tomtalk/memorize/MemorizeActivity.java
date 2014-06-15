@@ -299,9 +299,22 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String item4 = "('这是一个填空题示例。请写出Tom的生日：', '19790312','quiz','" + play_mtime + "),";
 	String item5 = "('这是一个选择题示例。Tom的是男生吗？', '是|不是|1','quiz','" + play_mtime + ")";
 
-	String init_user_db = "INSERT INTO questions (question, answer, type, next_play_date, mtime) VALUES ";
-	init_user_db += item1 + item2 + item3 + item4 + item5;
-	db.execSQL(init_user_db);
+	String init_questions = "INSERT INTO questions (question, answer, type, next_play_date, mtime) VALUES ";
+	init_questions += item1 + item2 + item3 + item4 + item5;
+	db.execSQL(init_questions);
+
+	
+	db.execSQL("DROP TABLE IF EXISTS item_type");
+	db.execSQL("CREATE TABLE item_type ( id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, priority INT DEFAULT 0, color CHAR DEFAULT 'ffffff', fade_out INT DEFAULT 0, sync_state char DEFAULT 'add' ) ");
+
+	String type1 = "(1, 'memo', 0, 'ffffff', 0, ''),";
+	String type2 = "(2, 'bug', 0, 'ffffff', 0, ''),";
+	String type3 = "(3, 'todo', 0, 'ffffff', 0, ''),";
+	String type4 = "(4, 'quiz', 0, 'ffffff', 0, '')";
+
+	String init_item_type = "INSERT INTO item_type (id, name, priority, color, fade_out, sync_state) VALUES ";
+	init_item_type += type1 + type2 + type3 + type4;
+	db.execSQL(init_item_type);
     }
 
     public SharedPreferences getSetting() {
