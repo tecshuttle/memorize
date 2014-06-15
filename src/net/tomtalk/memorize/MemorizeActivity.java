@@ -59,7 +59,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     private MediaPlayer answer_correct_snd;
     private MediaPlayer answer_incorrect_snd;
     private MediaPlayer save_snd;
-    private float mLastionMotionX = 0; // 记住上次触摸屏的位置
 
     private class MyCustomAdapter extends BaseAdapter {
 	private MemorizeActivity me;
