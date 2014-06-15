@@ -3,6 +3,10 @@ package net.tomtalk.memorize;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,7 +57,46 @@ public class Add {
 	cancel_btn.setOnClickListener(onCancel);
 
 	addViewReset();
+	me.http.syncType(me.getUid());
 	spinnerInit();
+    }
+
+    public void sync_type(String result) {
+	if (result.compareTo("NA") != 0) {
+	    try {
+		JSONArray json = new JSONArray(result);
+		int total = json.length();
+
+		for (int i = 0; i < total; i++) {// 遍历JSONArray
+		    JSONObject type = json.getJSONObject(i);
+
+		    String id = type.getString("id");
+
+		    ContentValues values = new ContentValues();
+		    values.put("name", type.getString("name"));
+		    values.put("priority", type.getString("priority"));
+		    values.put("color", type.getString("color"));
+		    values.put("fade_out", type.getString("fade_out"));
+
+		    if (type.getString("sync_state").compareTo("add") == 0) {
+			// A
+			values.put("sync_state", "");
+			values.put("id", id);
+			db.insert("item_type", null, values);
+		    } else {
+			int num = db.update("item_type", values, "id=?", new String[] { id });
+			if (num == 0) {
+			    // B AB两处代码是一样的，要合并一下。
+			    values.put("sync_state", "");
+			    values.put("id", id);
+			    db.insert("item_type", null, values);
+			}
+		    }
+		}
+	    } catch (JSONException e) {
+		e.printStackTrace();
+	    }
+	}
     }
 
     public void spinnerInit() {

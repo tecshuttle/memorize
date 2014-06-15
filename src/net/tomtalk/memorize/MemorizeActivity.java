@@ -51,9 +51,9 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     public Common common = new Common();
     public Http http = new Http(this);
     public Setting setting = new Setting(this);
+    public Add add = new Add(this);
 
     private GestureDetector gesture_detector;
-    private Add add = new Add(this);
     private Play play = new Play(this);
 
     private ListView listview;
