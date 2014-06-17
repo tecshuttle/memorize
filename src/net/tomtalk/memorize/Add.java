@@ -204,7 +204,9 @@ public class Add {
 		    content_empty();
 		} else {
 		    me.update_question(rec_id, question, answer);
-		    me.site_sync(); // 更新后立即保存
+		    // 更新后立即保存
+		    // 目前会刷新整个list，屏幕位置会跳到列表头部，在没有好办法前，先禁用。
+		    // me.site_sync();
 		}
 		return;
 	    }

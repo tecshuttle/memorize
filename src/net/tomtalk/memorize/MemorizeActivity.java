@@ -643,7 +643,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String sql = "SELECT * FROM questions WHERE sync_state <> ''";
 	Cursor c = db.rawQuery(sql, new String[] {});
 
-	JSONArray rows = new JSONArray();
+	JSONArray sync_items = new JSONArray();
 
 	while (c.moveToNext()) {
 	    JSONObject row = new JSONObject();
@@ -676,7 +676,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		row.put("create_date", create_date);
 		row.put("sync_state", sync_state);
 		row.put("mtime", mtime + "");
-		rows.put(row);
+		sync_items.put(row);
 	    } catch (JSONException e) {
 		e.printStackTrace();
 	    }
@@ -684,7 +684,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	c.close();
 
-	http.site_sync(rows.toString());
+	http.site_sync(sync_items.toString());
     }
 
     public void upload_to_site(String result) {
