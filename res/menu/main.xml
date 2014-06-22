@@ -30,6 +30,13 @@
         android:titleCondensed="account">
     </item>
     <item
+        android:id="@+id/update_version"
+        android:icon="@android:drawable/ic_menu_help"
+        android:showAsAction="ifRoom"
+        android:title="更新App"
+        android:titleCondensed="update version">
+    </item>
+    <item
         android:id="@+id/help"
         android:icon="@android:drawable/ic_menu_help"
         android:showAsAction="ifRoom"
