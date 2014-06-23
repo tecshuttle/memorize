@@ -360,7 +360,6 @@ public class Http {
 	new syncTypeTask(me).execute(uid);
     }
 
-    
     // sync type_time table from site
     private class initNewUserDBTask extends AsyncTask<String, Void, String> {
 	private MemorizeActivity me;
@@ -420,6 +419,65 @@ public class Http {
 	}
 
 	new initNewUserDBTask(me).execute(uid);
+    }
+
+    // sync type_time table from site
+    public class checkNewestVersionTask extends AsyncTask<String, Void, String> {
+	private MemorizeActivity me;
+
+	public checkNewestVersionTask(MemorizeActivity activity) {
+	    me = activity;
+	}
+
+	@Override
+	protected String doInBackground(String... urls) {
+	    String versionCode = urls[0];
+	    InputStream inputStream = null;
+	    String result = "";
+
+	    try {
+		HttpClient client = new DefaultHttpClient();
+
+		// 设置post参数
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("versionCode", versionCode));
+
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+		HttpPost request = new HttpPost(
+			"http://42.121.108.182/memorize/check_version.php");
+		request.setHeader("Content-Type",
+			"application/x-www-form-urlencoded; charset=utf-8");
+		request.setEntity(entity);
+
+		// 发送请求
+		HttpResponse httpResponse = client.execute(request);
+		inputStream = httpResponse.getEntity().getContent();
+
+		if (inputStream != null)
+		    result = convertInputStreamToString(inputStream);
+		else
+		    result = "error";
+
+	    } catch (Exception e) {
+		// none
+	    }
+
+	    return result;
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+	    me.updateApp(result);
+	}
+    }
+
+    public void checkNewestVersion(String versionCode) {
+	if (!isConnected()) {
+	    return;
+	}
+
+	new checkNewestVersionTask(me).execute(versionCode);
     }
 }
 

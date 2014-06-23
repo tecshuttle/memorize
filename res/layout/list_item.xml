@@ -76,9 +76,12 @@
             android:id="@+id/ItemText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingTop="4dp"
             android:text="@string/answer"
             android:textSize="12sp"
             android:typeface="monospace" />
+
     </LinearLayout>
 
     <TextView

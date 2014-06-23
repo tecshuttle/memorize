@@ -293,6 +293,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	} else {
 	    open_db_file();
 	    site_sync();
+	    checkNewestVersion();
 	    loadAllQuestion(); // 加载题库
 	    changeViewToList(); // 默认进入列表页
 	}
@@ -451,7 +452,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    changeViewToAccount();
 	    break;
 	case R.id.update_version:
-	    updateVersion();
+	    checkNewestVersion();
 	    break;
 	case R.id.help:
 	    changeViewToHelp();
@@ -631,14 +632,12 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	changeView(5);
     }
 
-    public void updateVersion() {
+    public void checkNewestVersion() {
 	PackageManager pm = this.getPackageManager(); // context为当前Activity上下文
 
 	try {
 	    PackageInfo packageInfo = pm.getPackageInfo(this.getPackageName(), 0);
-	    if (packageInfo.versionCode > 1) {
-		updateApp();
-	    }
+	    http.checkNewestVersion(packageInfo.versionCode + "");
 	} catch (NameNotFoundException e) {
 	    e.printStackTrace();
 	}
@@ -693,10 +692,14 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	}
     }
 
-    public void updateApp() {
-	UpdateApp atualizaApp = new UpdateApp();
-	atualizaApp.setContext(getApplicationContext());
-	atualizaApp.execute("http://42.121.108.182/memorize/memorize.apk");
+    public void updateApp(String result) {
+	if (result.compareTo("update") == 0) {
+	    UpdateApp atualizaApp = new UpdateApp();
+	    atualizaApp.setContext(getApplicationContext());
+	    atualizaApp.execute("http://42.121.108.182/memorize/memorize.apk");
+	} else {
+	    toast(result);
+	}
     }
 
     public void changeViewToHelp() {

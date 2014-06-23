@@ -206,7 +206,7 @@ public class Add {
 		    me.update_question(rec_id, question, answer);
 		    // 更新后立即保存
 		    // 目前会刷新整个list，屏幕位置会跳到列表头部，在没有好办法前，先禁用。
-		    // me.site_sync();
+		    me.site_sync();
 		}
 		return;
 	    }
