@@ -697,8 +697,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    UpdateApp atualizaApp = new UpdateApp();
 	    atualizaApp.setContext(getApplicationContext());
 	    atualizaApp.execute("http://42.121.108.182/memorize/memorize.apk");
-	} else {
-	    toast(result);
 	}
     }
 
