@@ -8,8 +8,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.ClipboardManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+@SuppressWarnings("deprecation")
 public class Add {
 
     public List<String> list = new ArrayList<String>();
@@ -144,7 +147,11 @@ public class Add {
 	rec_id.setText("0"); // 新建为0，编辑时rec_id > 0
 
 	// 题目、答案控件清空
-	question.setText("");
+	ClipboardManager clipboard = (ClipboardManager) me.getSystemService(Context.CLIPBOARD_SERVICE);
+	String cb_text = clipboard.getText().toString();
+	clipboard.setText("");
+	
+	question.setText(cb_text);
 	answer.setText("");
     }
 
