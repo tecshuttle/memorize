@@ -3,16 +3,16 @@
     android:id="@+id/play_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
+    android:background="@drawable/shadow"
+    android:fadingEdge="vertical"
     android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/SyncState"
         android:layout_width="4dip"
         android:layout_height="match_parent"
-        android:background="#FF1493"
-        android:text=""
-        android:visibility="invisible" />
+        android:background="#FFFFFF"
+        android:text=""/>
 
     <LinearLayout
         android:id="@+id/RelativeLayout_memo"
@@ -21,6 +21,7 @@
         android:orientation="vertical"
         android:paddingBottom="8dip"
         android:paddingLeft="12dip"
+        android:background="#FFFFFF"
         android:paddingRight="18dip"
         android:paddingTop="8dip" >
 

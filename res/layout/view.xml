@@ -3,7 +3,7 @@
     android:id="@+id/view_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF" >
+    android:background="#f8f8ff" >
 
     <ListView
         android:id="@+id/question_list"
@@ -11,8 +11,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:divider="#cccccc"
-        android:dividerHeight="0.5dp" >
+        android:divider="#f8f8ff"
+        android:dividerHeight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:scrollbars="none" >
+
     </ListView>
 
 </RelativeLayout>
