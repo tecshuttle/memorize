@@ -13,7 +13,9 @@
         android:layout_alignParentTop="true"
         android:divider="#f8f8ff"
         android:dividerHeight="8dp"
-        android:padding="8dp" >
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:scrollbars="none" >
 
     </ListView>
 
