@@ -117,17 +117,19 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	public int getItemViewType(HashMap<String, Object> question) {
 	    int type = 0;
-	    int question_type[] = me.common.get_item_type(question.get("Type").toString());
+	    
+	    //int question_type[] = me.common.get_item_type(question.get("Type").toString());
 
-	    if (question_type[0] == 0 && question_type[1] == 0) {
+	    int priority = Integer.parseInt(question.get("Priority").toString());
+	    int is_memo = Integer.parseInt(question.get("isMemo").toString());
+	    
+	    if (is_memo == 0) {
 		type = TYPE_QUESTION;
-	    } else if (question_type[0] == 10) {
+	    } else if (priority > 0 && priority < 50) {
 		type = TYPE_MEMO;
-	    } else if (question_type[0] == 50) {
+	    } else {
 		type = TYPE_TODO;
-	    } else if (question_type[0] == 80) {
-		type = TYPE_BUG;
-	    }
+	    } 
 
 	    return type;
 	}
@@ -154,6 +156,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    convertView = mInflater.inflate(R.layout.list_item, null);
 	    holder.top_bar = (LinearLayout) convertView.findViewById(R.id.top_bar);
+	    holder.item_type = (TextView) convertView.findViewById(R.id.list_item_type);
 	    holder.sync_state = (TextView) convertView.findViewById(R.id.SyncState);
 	    holder.type = (TextView) convertView.findViewById(R.id.list_item_type);
 	    holder.familiar = (TextView) convertView.findViewById(R.id.list_item_familiar);
@@ -163,34 +166,32 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    holder.text = (TextView) convertView.findViewById(R.id.ItemText);
 
 	    HashMap<String, Object> question = mData.get(position);
-	    int type = getItemViewType(question);
 	    int color = 0;
+	    String type_name = question.get("Type").toString();
+	    int type = getItemViewType(question);
+	    
 	    switch (type) {
-	    case TYPE_BUG:
-		color = 0xFF000000 + Integer.parseInt(item_type.get("bug")[1], 16);
-		holder.top_bar.setVisibility(/* GONE = */8);
-		holder.title.setTextColor(color);
-		holder.text.setTextColor(color);
-		break;
 	    case TYPE_TODO:
-		color = 0xFF000000 + Integer.parseInt(item_type.get("todo")[1], 16);
+		color = 0xFF000000 + Integer.parseInt(item_type.get(type_name)[1], 16);
 		holder.top_bar.setVisibility(/* GONE = */8);
 		holder.title.setTextColor(color);
 		holder.text.setTextColor(color);
 		break;
 	    case TYPE_MEMO:
 		int mtime = Integer.parseInt(question.get("mtime").toString());
-		color = getMemoColor(mtime) + Integer.parseInt(item_type.get("memo")[1], 16);
+		color = getMemoColor(mtime) + Integer.parseInt(item_type.get(type_name)[1], 16);
 		holder.top_bar.setVisibility(/* GONE = */8);
 		holder.title.setTextColor(color);
 		holder.text.setTextColor(color);
 		break;
 	    case TYPE_QUESTION:
-		color = 0xFF000000 + Integer.parseInt(item_type.get("quiz")[1], 16);
-		holder.type.setText(question.get("Type").toString());
+		color = 0xFF000000 + Integer.parseInt(item_type.get(type_name)[1], 16);
+		
+		holder.type.setText(type_name);
 		holder.familiar.setText(" Ïœ§∂» " + question.get("Familiar"));
 		holder.date.setText("¡∑œ∞»’ " + question.get("PlayDate").toString());
 
+		holder.item_type.setTextColor(color);
 		holder.title.setTextSize(12);
 		holder.title.setTextColor(color);
 
@@ -260,6 +261,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
     public static class ViewHolder {
 	public LinearLayout top_bar;
+	public TextView item_type;
 	public TextView sync_state;
 	public TextView type;
 	public TextView familiar;
@@ -539,7 +541,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String type = c.getString(c.getColumnIndex("type"));
 	String sync_state = c.getString(c.getColumnIndex("sync_state"));
 	String next_play_date = c.getString(c.getColumnIndex("next_play_date"));
+	
 	int familiar = c.getInt(c.getColumnIndex("familiar"));
+	int priority = c.getInt(c.getColumnIndex("priority"));
+	int is_memo = c.getInt(c.getColumnIndex("is_memo"));
 	int mtime = c.getInt(c.getColumnIndex("mtime"));
 	int correct_count = c.getInt(c.getColumnIndex("correct_count"));
 
@@ -552,6 +557,8 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	map.put("SyncState", sync_state);
 	map.put("PlayDate", next_play_date);
 	map.put("Familiar", familiar);
+	map.put("Priority", priority);
+	map.put("isMemo", is_memo);
 	map.put("mtime", mtime);
 	map.put("CorrectCount", correct_count);
 
