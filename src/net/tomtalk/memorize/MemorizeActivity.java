@@ -15,8 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context; //数据库支持
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -30,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.ClipboardManager;
 import android.view.GestureDetector; //手势
 import android.view.GestureDetector.OnGestureListener; //手势
 import android.view.LayoutInflater;
@@ -51,6 +54,7 @@ import android.widget.TextView;
 import android.widget.Toast; //简易提示
 import android.widget.ViewFlipper;
 
+@SuppressWarnings("deprecation")
 public class MemorizeActivity extends Activity implements OnGestureListener {
     public SQLiteDatabase db;
     public ArrayList<HashMap<String, Object>> listItem;
@@ -77,7 +81,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     private class MyCustomAdapter extends BaseAdapter {
 	private MemorizeActivity me;
 
-	private static final int TYPE_BUG = 1;
 	private static final int TYPE_TODO = 2;
 	private static final int TYPE_MEMO = 3;
 	private static final int TYPE_QUESTION = 4;
@@ -117,19 +120,20 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	public int getItemViewType(HashMap<String, Object> question) {
 	    int type = 0;
-	    
-	    //int question_type[] = me.common.get_item_type(question.get("Type").toString());
+
+	    // int question_type[] =
+	    // me.common.get_item_type(question.get("Type").toString());
 
 	    int priority = Integer.parseInt(question.get("Priority").toString());
 	    int is_memo = Integer.parseInt(question.get("isMemo").toString());
-	    
+
 	    if (is_memo == 0) {
 		type = TYPE_QUESTION;
 	    } else if (priority > 0 && priority < 50) {
 		type = TYPE_MEMO;
 	    } else {
 		type = TYPE_TODO;
-	    } 
+	    }
 
 	    return type;
 	}
@@ -156,7 +160,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    convertView = mInflater.inflate(R.layout.list_item, null);
 	    holder.top_bar = (LinearLayout) convertView.findViewById(R.id.top_bar);
-	    holder.item_type = (TextView) convertView.findViewById(R.id.list_item_type);
 	    holder.sync_state = (TextView) convertView.findViewById(R.id.SyncState);
 	    holder.type = (TextView) convertView.findViewById(R.id.list_item_type);
 	    holder.familiar = (TextView) convertView.findViewById(R.id.list_item_familiar);
@@ -169,7 +172,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    int color = 0;
 	    String type_name = question.get("Type").toString();
 	    int type = getItemViewType(question);
-	    
+
 	    switch (type) {
 	    case TYPE_TODO:
 		color = 0xFF000000 + Integer.parseInt(item_type.get(type_name)[1], 16);
@@ -186,12 +189,12 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		break;
 	    case TYPE_QUESTION:
 		color = 0xFF000000 + Integer.parseInt(item_type.get(type_name)[1], 16);
-		
+
 		holder.type.setText(type_name);
 		holder.familiar.setText("熟悉度 " + question.get("Familiar"));
 		holder.date.setText("练习日 " + question.get("PlayDate").toString());
 
-		holder.item_type.setTextColor(color);
+		holder.type.setTextColor(color);
 		holder.title.setTextSize(12);
 		holder.title.setTextColor(color);
 
@@ -261,7 +264,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
     public static class ViewHolder {
 	public LinearLayout top_bar;
-	public TextView item_type;
 	public TextView sync_state;
 	public TextView type;
 	public TextView familiar;
@@ -293,11 +295,53 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	if (getUid().compareTo("") == 0) {
 	    changeViewToAccount();
 	} else {
-	    open_db_file();
+	    open_db_file();	    
 	    site_sync();
 	    checkNewestVersion();
 	    loadAllQuestion(); // 加载题库
 	    changeViewToList(); // 默认进入列表页
+	}
+    }
+
+    @Override
+    protected void onResume() {
+	super.onResume();
+
+	ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+	String cb_text = clipboard.getText().toString();
+
+	if (cb_text.length() > 0) {
+
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+	    builder.setTitle("粘贴板有内容，生成备忘吗？");
+	    builder.setMessage(cb_text);
+
+	    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+		    // toast("positive: " + which);
+		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		    
+		    add.init();
+		    add.add("memo", clipboard.getText().toString(), "");
+		    
+		    clipboard.setText("");
+		    
+		    site_sync();
+		}
+	    });
+
+	    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+		    // toast("negative: " + which);
+		}
+	    });
+
+	    builder.show();
 	}
     }
 
@@ -541,7 +585,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String type = c.getString(c.getColumnIndex("type"));
 	String sync_state = c.getString(c.getColumnIndex("sync_state"));
 	String next_play_date = c.getString(c.getColumnIndex("next_play_date"));
-	
+
 	int familiar = c.getInt(c.getColumnIndex("familiar"));
 	int priority = c.getInt(c.getColumnIndex("priority"));
 	int is_memo = c.getInt(c.getColumnIndex("is_memo"));
@@ -569,6 +613,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	if (i == 0) {
 	    current_view = "add";
 	    add.init();
+	    openInput();
 	    setFullScreen(true);
 	}
 	if (i == 1) {

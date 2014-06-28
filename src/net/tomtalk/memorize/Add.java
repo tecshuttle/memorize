@@ -8,10 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.ClipboardManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,7 +18,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-@SuppressWarnings("deprecation")
 public class Add {
 
     public List<String> list = new ArrayList<String>();
@@ -45,12 +42,9 @@ public class Add {
     public void init() {
 	db = me.db; // 不要放到构造方法里，那时db还没初始化。
 
-	me.openInput();
-
 	// 初始化页面控件变量
 	rec_id = (TextView) me.findViewById(R.id.input_rec_id);
 	question = (EditText) me.findViewById(R.id.text_question);
-	question.requestFocus();
 	answer = (EditText) me.findViewById(R.id.text_answer);
 
 	// 按钮
@@ -147,12 +141,10 @@ public class Add {
 	rec_id.setText("0"); // 新建为0，编辑时rec_id > 0
 
 	// 题目、答案控件清空
-	ClipboardManager clipboard = (ClipboardManager) me.getSystemService(Context.CLIPBOARD_SERVICE);
-	String cb_text = clipboard.getText().toString();
-	clipboard.setText("");
-	
-	question.setText(cb_text);
+	question.setText("");
 	answer.setText("");
+	
+	question.requestFocus();
     }
 
     public void edit_question(String rec_id) {
@@ -223,26 +215,7 @@ public class Add {
 		return;
 	    }
 
-	    ContentValues values = new ContentValues();
-	    int question_type[] = me.common.get_item_type(type);
-
-	    values.put("question", question);
-	    values.put("answer", answer);
-	    values.put("next_play_date", me.getToday(0));
-	    values.put("create_date", me.getToday(0));
-	    values.put("priority", question_type[0]);
-	    values.put("type", type);
-	    values.put("is_memo", question_type[1]);
-	    values.put("mtime", (System.currentTimeMillis() / 1000) + "");
-
-	    // 为了不与网站上新增记录冲突，手机端仅生成奇数id的数据
-	    long new_id = 0;
-	    new_id = db.insert("questions", null, values);
-
-	    if (new_id % 2 == 0) {
-		delete_by_id(new_id);
-		db.insert("questions", null, values);
-	    }
+	    add(type, question, answer);
 
 	    me.playSound("save");
 	    me.toast("条目已保存");
@@ -254,6 +227,29 @@ public class Add {
 	    me.site_sync(); // 更新后立即保存
 	}
     };
+
+    public void add(String item_type, String new_question, String new_answer) {
+	ContentValues values = new ContentValues();
+	int question_type[] = me.common.get_item_type(item_type);
+
+	values.put("question", new_question);
+	values.put("answer", new_answer);
+	values.put("next_play_date", me.getToday(0));
+	values.put("create_date", me.getToday(0));
+	values.put("priority", question_type[0]);
+	values.put("type", item_type);
+	values.put("is_memo", question_type[1]);
+	values.put("mtime", (System.currentTimeMillis() / 1000) + "");
+
+	// 为了不与网站上新增记录冲突，手机端仅生成奇数id的数据
+	long new_id = 0;
+	new_id = me.db.insert("questions", null, values);
+
+	if (new_id % 2 == 0) {
+	    delete_by_id(new_id);
+	    me.db.insert("questions", null, values);
+	}
+    }
 
     Button.OnClickListener onCancel = new Button.OnClickListener() {
 	public void onClick(View v) {
