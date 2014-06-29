@@ -318,11 +318,9 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    builder.setTitle("粘贴板有内容，生成备忘吗？");
 	    builder.setMessage(cb_text);
 
-	    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
+	    builder.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-		    // toast("positive: " + which);
 		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 		    
 		    add.init();
@@ -333,11 +331,21 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		    site_sync();
 		}
 	    });
+	    
+	    builder.setNeutralButton("清除", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+            	ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    		    clipboard.setText("");
+            }
+        });
 
 	    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-		    // toast("negative: " + which);
+		    // nothing to do
 		}
 	    });
 
