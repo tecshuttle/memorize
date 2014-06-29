@@ -143,8 +143,6 @@ public class Add {
 	// 题目、答案控件清空
 	question.setText("");
 	answer.setText("");
-	
-	question.requestFocus();
     }
 
     public void edit_question(String rec_id) {
