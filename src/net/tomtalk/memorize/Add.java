@@ -1,6 +1,7 @@
 package net.tomtalk.memorize;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -21,10 +22,12 @@ import android.widget.TextView;
 public class Add {
 
     public List<String> list = new ArrayList<String>();
+    
     public Spinner mySpinner;
     public ArrayAdapter<String> adapter;
     public int list_position = 0;
     public String type = "";
+    public int type_id = 0;
     public SQLiteDatabase db;
 
     private MemorizeActivity me;
@@ -34,6 +37,8 @@ public class Add {
     private TextView rec_id;
     private EditText question;
     private EditText answer;
+    
+    private HashMap<String, String> item_type = new HashMap<String, String>();
 
     public Add(MemorizeActivity activity) {
 	me = activity;
@@ -106,8 +111,12 @@ public class Add {
 	list.clear();
 	String sq = "SELECT * FROM item_type ";
 	Cursor cs = db.rawQuery(sq, new String[] {});
+
+	item_type.clear();
+	
 	while (cs.moveToNext()) {
 	    list.add(cs.getString(cs.getColumnIndex("name")));
+	    item_type.put(cs.getString(cs.getColumnIndex("name")), cs.getString(cs.getColumnIndex("id")));
 	}
 	cs.close();
 
@@ -121,6 +130,7 @@ public class Add {
 		TextView view = (TextView) arg1;
 		view.setTextColor(0xff333333); // 设置颜色
 		type = view.getText().toString();
+		type_id = Integer.parseInt(item_type.get(type)); 
 	    }
 
 	    public void onNothingSelected(AdapterView<?> arg0) {
@@ -155,7 +165,9 @@ public class Add {
 	EditText text_question = (EditText) me.findViewById(R.id.text_question);
 	EditText text_answer = (EditText) me.findViewById(R.id.text_answer);
 
-	Cursor c = db.rawQuery("SELECT * FROM questions WHERE _id = ?", new String[] { rec_id });
+	String sql = "SELECT t.name as type, q.* FROM questions as q left join item_type as t on (q.type_id = t.id) WHERE q._id = ?";
+	
+	Cursor c = db.rawQuery(sql, new String[] { rec_id });
 
 	while (c.moveToNext()) {
 	    String type = c.getString(c.getColumnIndex("type"));
@@ -228,15 +240,13 @@ public class Add {
 
     public void add(String item_type, String new_question, String new_answer) {
 	ContentValues values = new ContentValues();
-	int question_type[] = me.common.get_item_type(item_type);
+	//int question_type[] = me.common.get_item_type(item_type);
 
 	values.put("question", new_question);
 	values.put("answer", new_answer);
 	values.put("next_play_date", me.getToday(0));
 	values.put("create_date", me.getToday(0));
-	values.put("priority", question_type[0]);
-	values.put("type", item_type);
-	values.put("is_memo", question_type[1]);
+	values.put("type_id", type_id);
 	values.put("mtime", (System.currentTimeMillis() / 1000) + "");
 
 	// 为了不与网站上新增记录冲突，手机端仅生成奇数id的数据

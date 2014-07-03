@@ -164,7 +164,7 @@ public class Http {
 	    return;
 	}
 
-	new UpLoadTask(me).execute(rows_json, me.getUid());
+	//new UpLoadTask(me).execute(rows_json, me.getUid());
 	new DownLoadTask(me).execute(rows_json, me.getUid());
     }
 

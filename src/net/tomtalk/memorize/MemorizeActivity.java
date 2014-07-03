@@ -121,16 +121,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	public int getItemViewType(HashMap<String, Object> question) {
 	    int type = 0;
 
-	    // int question_type[] =
-	    // me.common.get_item_type(question.get("Type").toString());
-
 	    int priority = Integer.parseInt(question.get("Priority").toString());
-	    int is_memo = Integer.parseInt(question.get("isMemo").toString());
 
-	    if (is_memo == 0) {
+	    if (priority == 0) {
 		type = TYPE_QUESTION;
-	    } else if (priority > 0 && priority < 50) {
-		type = TYPE_MEMO;
 	    } else {
 		type = TYPE_TODO;
 	    }
@@ -175,15 +169,14 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    switch (type) {
 	    case TYPE_TODO:
-		color = 0xFF000000 + Integer.parseInt(item_type.get(type_name)[1], 16);
-		holder.top_bar.setVisibility(/* GONE = */8);
-		holder.title.setTextColor(color);
-		holder.text.setTextColor(color);
-		break;
-	    case TYPE_MEMO:
 		int mtime = Integer.parseInt(question.get("mtime").toString());
 		color = getMemoColor(mtime) + Integer.parseInt(item_type.get(type_name)[1], 16);
-		holder.top_bar.setVisibility(/* GONE = */8);
+
+		holder.type.setText(type_name);
+		holder.type.setTextColor(color);
+		holder.familiar.setVisibility(/* GONE = */8);
+		holder.date.setVisibility(/* GONE = */8);
+
 		holder.title.setTextColor(color);
 		holder.text.setTextColor(color);
 		break;
@@ -295,10 +288,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	if (getUid().compareTo("") == 0) {
 	    changeViewToAccount();
 	} else {
-	    open_db_file();	    
+	    open_db_file();
 	    site_sync();
 	    checkNewestVersion();
-	    loadAllQuestion(); // 加载题库
+	    //loadAllQuestion(); // 加载题库
 	    changeViewToList(); // 默认进入列表页
 	}
     }
@@ -322,25 +315,23 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-		    
+
 		    add.init();
 		    add.add("memo", clipboard.getText().toString(), "");
-		    
+
 		    clipboard.setText("");
-		    
+
 		    site_sync();
 		}
 	    });
-	    
-	    builder.setNeutralButton("清除", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-            	ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-    		    clipboard.setText("");
-            }
-        });
+
+	    builder.setNeutralButton("清除", new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		    clipboard.setText("");
+		}
+	    });
 
 	    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 		@Override
@@ -374,7 +365,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     }
 
     public void create_db_table() {
-	db.execSQL("CREATE TABLE questions ( _id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR, answer VARCHAR, explain VARCHAR DEFAULT '', priority INT DEFAULT 0, type CHAR NOT NULL DEFAULT '', is_memo INT NOT NULL DEFAULT 0, next_play_date DATE, familiar INT DEFAULT 0, correct_count INT DEFAULT 0, create_date DATE, sync_state CHAR DEFAULT 'add', mtime INT DEFAULT 0)");
+	db.execSQL("CREATE TABLE questions ( _id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR, answer VARCHAR, explain VARCHAR DEFAULT '', type_id INT DEFAULT 0, next_play_date DATE, familiar INT DEFAULT 0, correct_count INT DEFAULT 0, create_date DATE, sync_state CHAR DEFAULT 'add', mtime INT DEFAULT 0)");
 	db.execSQL("CREATE TABLE item_type ( id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, priority INT DEFAULT 0, color CHAR DEFAULT 'ffffff', fade_out INT DEFAULT 0, sync_state char DEFAULT 'add' ) ");
     }
 
@@ -403,7 +394,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     public void update_question(String rec_id, String question, String answer) {
 	ContentValues values = new ContentValues();
 
-	int question_type[] = common.get_item_type(add.type);
+	// int question_type[] = common.get_item_type(add.type);
 
 	// 取sync_state状态
 	String sq = "SELECT * FROM questions " + "WHERE _id = ?";
@@ -420,10 +411,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	values.put("question", question);
 	values.put("answer", answer);
-	values.put("priority", question_type[0]);
-	values.put("type", add.type);
-	values.put("is_memo", question_type[1]);
-
+	values.put("type_id", add.type_id);
 	values.put("mtime", (System.currentTimeMillis() / 1000) + "");
 
 	db.update("questions", values, "_id=?", new String[] { rec_id });
@@ -433,7 +421,8 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	changeView(3); // change to list view
 
 	// 更新条目显示
-	String sql = "SELECT * FROM questions " + "WHERE _id = ?";
+	// String sql = "SELECT * FROM questions " + "WHERE _id = ?";
+	String sql = "SELECT t.priority, t.name as type, q.* FROM questions as q left join item_type as t on (q.type_id = t.id) WHERE q._id = ?";
 	Cursor c = db.rawQuery(sql, new String[] { rec_id });
 
 	while (c.moveToNext()) {
@@ -551,8 +540,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     }
 
     public void loadAllQuestion() {
-	String sql = "SELECT * FROM questions WHERE is_memo = ? AND correct_count < 3 AND next_play_date <= '"
+	String sql = "SELECT t.name as type, t.priority, q.* FROM questions as q left join item_type as t "
+		+ "on (q.type_id = t.id) WHERE t.priority = ? AND q.correct_count < 3 AND q.next_play_date <= '"
 		+ getToday(0) + "'";
+	
 	Cursor c = db.rawQuery(sql, new String[] { "0" });
 	push_listItem(c);
     }
@@ -560,10 +551,20 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     public void loadAllRecord() {
 	long mtime = (System.currentTimeMillis() / 1000) - (7 * 24 * 3600);
 
-	String sql = "SELECT * FROM questions " + "WHERE (is_memo = ? AND next_play_date <= '"
-		+ getToday(0) + "') " + " OR (is_memo = 1 AND ( priority > 10 OR mtime > " + mtime
-		+ ")) ORDER BY priority DESC, mtime DESC";
+	String sql = "SELECT t.name AS type, t.priority, q.* FROM questions AS q LEFT JOIN item_type AS t "
+		+ "ON (q.type_id = t.id) "
+		+ "WHERE "
+		+ "(t.priority = 0 AND q.next_play_date <= '"
+		+ getToday(0)
+		+ "') "
+		+ "OR "
+		+ "(t.priority > ? AND q.mtime > "
+		+ mtime
+		+ ") "
+		+ "ORDER BY t.priority DESC, q.mtime DESC";
+
 	Cursor c = db.rawQuery(sql, new String[] { "0" });
+
 	push_listItem(c);
     }
 
@@ -595,9 +596,9 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String next_play_date = c.getString(c.getColumnIndex("next_play_date"));
 
 	int familiar = c.getInt(c.getColumnIndex("familiar"));
-	int priority = c.getInt(c.getColumnIndex("priority"));
-	int is_memo = c.getInt(c.getColumnIndex("is_memo"));
 	int mtime = c.getInt(c.getColumnIndex("mtime"));
+	int priority = c.getInt(c.getColumnIndex("priority"));
+	int type_id = c.getInt(c.getColumnIndex("type_id"));
 	int correct_count = c.getInt(c.getColumnIndex("correct_count"));
 
 	HashMap<String, Object> map = new HashMap<String, Object>();
@@ -605,12 +606,12 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	map.put("ItemTitle", question);
 	map.put("ItemText", answer);
 	map.put("ItemExplain", explain);
+	map.put("Priority", priority);
+	map.put("TypeId", type_id);
 	map.put("Type", type);
 	map.put("SyncState", sync_state);
 	map.put("PlayDate", next_play_date);
 	map.put("Familiar", familiar);
-	map.put("Priority", priority);
-	map.put("isMemo", is_memo);
 	map.put("mtime", mtime);
 	map.put("CorrectCount", correct_count);
 
@@ -795,9 +796,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    String question = c.getString(c.getColumnIndex("question"));
 	    String answer = c.getString(c.getColumnIndex("answer"));
 	    String explain = c.getString(c.getColumnIndex("explain"));
-	    int priority = c.getInt(c.getColumnIndex("priority"));
-	    String type = c.getString(c.getColumnIndex("type"));
-	    int is_memo = c.getInt(c.getColumnIndex("is_memo"));
+	    int type_id = c.getInt(c.getColumnIndex("type_id"));
 	    String next_play_date = c.getString(c.getColumnIndex("next_play_date"));
 	    int familiar = c.getInt(c.getColumnIndex("familiar"));
 	    int correct_count = c.getInt(c.getColumnIndex("correct_count"));
@@ -810,9 +809,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		row.put("question", question);
 		row.put("answer", answer);
 		row.put("explain", explain);
-		row.put("priority", priority + "");
-		row.put("type", type);
-		row.put("is_memo", is_memo + "");
+		row.put("type_id", type_id);
 		row.put("next_play_date", next_play_date);
 		row.put("familiar", familiar + "");
 		row.put("correct_count", correct_count + "");
@@ -871,9 +868,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		values.put("question", oj.getString("question"));
 		values.put("answer", oj.getString("answer"));
 		values.put("explain", oj.getString("explain"));
-		values.put("priority", oj.getString("priority"));
-		values.put("type", oj.getString("type"));
-		values.put("is_memo", oj.getString("is_memo"));
+		values.put("type_id", oj.getString("type_id"));
 		values.put("next_play_date", oj.getString("next_play_date"));
 		values.put("familiar", oj.getString("familiar"));
 		values.put("correct_count", oj.getString("correct_count"));
