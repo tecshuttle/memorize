@@ -46,7 +46,7 @@ public class Http {
 
 	    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
-	    HttpPost request = new HttpPost("http://42.121.108.182/method.php");
+	    HttpPost request = new HttpPost("http://42.121.108.182/memorize/method.php");
 	    request.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 	    request.setEntity(entity);
 
@@ -164,7 +164,7 @@ public class Http {
 	    return;
 	}
 
-	//new UpLoadTask(me).execute(rows_json, me.getUid());
+	new UpLoadTask(me).execute(rows_json, me.getUid());
 	new DownLoadTask(me).execute(rows_json, me.getUid());
     }
 

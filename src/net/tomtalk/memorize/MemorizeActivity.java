@@ -82,7 +82,6 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	private MemorizeActivity me;
 
 	private static final int TYPE_TODO = 2;
-	private static final int TYPE_MEMO = 3;
 	private static final int TYPE_QUESTION = 4;
 
 	private HashMap<String, String[]> item_type = new HashMap<String, String[]>();
