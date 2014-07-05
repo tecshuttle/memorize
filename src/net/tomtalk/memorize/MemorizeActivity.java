@@ -270,10 +270,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	super.onCreate(savedInstanceState);
 
 	// 隐去状态栏部分(电池等图标和一切修饰部分)
-	// this.getWindow().setFlags(
-	// WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	// WindowManager.LayoutParams.FLAG_FULLSCREEN
-	// );
+	 this.getWindow().setFlags(
+	 WindowManager.LayoutParams.FLAG_FULLSCREEN,
+	 WindowManager.LayoutParams.FLAG_FULLSCREEN
+	 );
 
 	gesture_detector = new GestureDetector(this, this); // 手势支持
 
