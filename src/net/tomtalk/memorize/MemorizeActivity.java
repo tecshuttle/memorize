@@ -159,6 +159,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    holder.date = (TextView) convertView.findViewById(R.id.list_item_date);
 	    holder.rec_id = (TextView) convertView.findViewById(R.id.ItemId);
 	    holder.title = (TextView) convertView.findViewById(R.id.ItemTitle);
+	    holder.head = (TextView) convertView.findViewById(R.id.list_item_head);
 	    holder.text = (TextView) convertView.findViewById(R.id.ItemText);
 
 	    HashMap<String, Object> question = mData.get(position);
@@ -173,10 +174,13 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 		holder.type.setText(type_name);
 		holder.type.setTextColor(color);
+		holder.head.setTextColor(color);
+		
 		holder.familiar.setVisibility(/* GONE = */8);
 		holder.date.setVisibility(/* GONE = */8);
 
 		holder.title.setTextColor(color);
+		holder.title.setVisibility(/* GONE = */8); 
 		holder.text.setTextColor(color);
 		break;
 	    case TYPE_QUESTION:
@@ -190,6 +194,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		holder.title.setTextSize(12);
 		holder.title.setTextColor(color);
 
+		holder.head.setVisibility(/* GONE = */8); 
 		holder.text.setVisibility(/* GONE = */8); // quiz不显示答案
 		break;
 	    default:
@@ -212,6 +217,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 
 	    holder.rec_id.setText((CharSequence) (question.get("ItemId") + ""));
 	    holder.title.setText((CharSequence) title);
+	    holder.head.setText((CharSequence) title);
 	    holder.text.setText((CharSequence) text);
 
 	    if (title.length() == 0)
@@ -261,6 +267,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	public TextView familiar;
 	public TextView date;
 	public TextView rec_id;
+	public TextView head;
 	public TextView title;
 	public TextView text;
     }
@@ -268,12 +275,10 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-
+	
 	// 隐去状态栏部分(电池等图标和一切修饰部分)
-	 this.getWindow().setFlags(
-	 WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	 WindowManager.LayoutParams.FLAG_FULLSCREEN
-	 );
+	this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 	gesture_detector = new GestureDetector(this, this); // 手势支持
 
@@ -290,7 +295,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    open_db_file();
 	    site_sync();
 	    checkNewestVersion();
-	    //loadAllQuestion(); // 加载题库
+	    // loadAllQuestion(); // 加载题库
 	    changeViewToList(); // 默认进入列表页
 	}
     }
@@ -542,7 +547,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String sql = "SELECT t.name as type, t.priority, q.* FROM questions as q left join item_type as t "
 		+ "on (q.type_id = t.id) WHERE t.priority = ? AND q.correct_count < 3 AND q.next_play_date <= '"
 		+ getToday(0) + "'";
-	
+
 	Cursor c = db.rawQuery(sql, new String[] { "0" });
 	push_listItem(c);
     }

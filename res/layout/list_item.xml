@@ -41,6 +41,17 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:typeface="monospace" />
+            
+            <TextView
+                android:id="@+id/list_item_head"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:gravity="left"
+                android:text="@string/familiar3"
+                android:textColor="#999"
+                android:textSize="14sp"
+                android:typeface="monospace" />
 
             <TextView
                 android:id="@+id/list_item_familiar"
@@ -57,7 +68,6 @@
                 android:id="@+id/list_item_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                
                 android:gravity="right"
                 android:text="@string/play_date"
                 android:textColor="#999"
@@ -69,6 +79,7 @@
             android:id="@+id/ItemTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
             android:text="@string/question"
             android:textSize="16sp"
             android:typeface="monospace" />
@@ -77,8 +88,6 @@
             android:id="@+id/ItemText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingTop="4dp"
             android:text="@string/answer"
             android:textSize="12sp"
             android:typeface="monospace" />
