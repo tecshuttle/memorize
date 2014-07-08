@@ -175,12 +175,12 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		holder.type.setText(type_name);
 		holder.type.setTextColor(color);
 		holder.head.setTextColor(color);
-		
+
 		holder.familiar.setVisibility(/* GONE = */8);
 		holder.date.setVisibility(/* GONE = */8);
 
 		holder.title.setTextColor(color);
-		holder.title.setVisibility(/* GONE = */8); 
+		holder.title.setVisibility(/* GONE = */8);
 		holder.text.setTextColor(color);
 		break;
 	    case TYPE_QUESTION:
@@ -194,7 +194,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		holder.title.setTextSize(12);
 		holder.title.setTextColor(color);
 
-		holder.head.setVisibility(/* GONE = */8); 
+		holder.head.setVisibility(/* GONE = */8);
 		holder.text.setVisibility(/* GONE = */8); // quiz不显示答案
 		break;
 	    default:
@@ -275,7 +275,9 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	
+
+	writeLog("onCreate()");
+
 	// 隐去状态栏部分(电池等图标和一切修饰部分)
 	this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 		WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -303,6 +305,8 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
     @Override
     protected void onResume() {
 	super.onResume();
+
+	writeLog("onResume()");
 
 	ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
@@ -578,6 +582,14 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	String today = dateFormat.format(date);
 
 	return today;
+    }
+
+    public String now() {
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	Date date = new Date(System.currentTimeMillis());
+	String time = dateFormat.format(date);
+
+	return time;
     }
 
     public void push_listItem(Cursor c) {
@@ -929,6 +941,20 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 	    }
 	}
     }
+
+    public void writeLog(String log) {
+	log = "[" + now() + "] " + log + "\n";
+
+	try {
+	    FileOutputStream fout = openFileOutput("log.txt", MODE_APPEND);
+	    byte[] bytes = log.getBytes();
+	    fout.write(bytes);
+	    fout.close();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
 }
 
 // end file

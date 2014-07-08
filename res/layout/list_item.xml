@@ -19,7 +19,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="8dip"
+        android:paddingBottom="4dip"
         android:paddingLeft="12dip"
         android:background="#FFFFFF"
         android:paddingRight="18dip"
@@ -88,6 +88,7 @@
             android:id="@+id/ItemText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
             android:text="@string/answer"
             android:textSize="12sp"
             android:typeface="monospace" />
