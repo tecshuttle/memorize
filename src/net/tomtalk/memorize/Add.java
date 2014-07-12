@@ -225,7 +225,7 @@ public class Add {
 		return;
 	    }
 
-	    add(type, question, answer);
+	    add(type_id, question, answer);
 
 	    me.playSound("save");
 	    me.toast("条目已保存");
@@ -238,9 +238,10 @@ public class Add {
 	}
     };
 
-    public void add(String item_type, String new_question, String new_answer) {
+    public void add(int type_id, String new_question, String new_answer) {
 	ContentValues values = new ContentValues();
-	//int question_type[] = me.common.get_item_type(item_type);
+	
+	me.writeLog("type_id = " + type_id);
 
 	values.put("question", new_question);
 	values.put("answer", new_answer);
