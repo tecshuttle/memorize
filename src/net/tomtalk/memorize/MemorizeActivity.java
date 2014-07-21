@@ -325,7 +325,7 @@ public class MemorizeActivity extends Activity implements OnGestureListener {
 		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
 		    add.init();
-		    add.add(1, clipboard.getText().toString(), "");
+		    add.add(1, "", clipboard.getText().toString());
 
 		    clipboard.setText("");
 

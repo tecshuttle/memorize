@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.tomtalk.memorize"
-    android:versionCode="86"
-    android:versionName="0.86" >
+    android:versionCode="89"
+    android:versionName="0.89" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -23,7 +23,6 @@
             android:name="net.tomtalk.memorize.MemorizeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/cn_app_name"
-            android:theme="@style/FullscreenTheme"
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
